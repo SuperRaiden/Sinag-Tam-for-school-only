@@ -1,1 +1,0 @@
-sinag tam
