@@ -1,0 +1,124 @@
+document.addEventListener("DOMContentLoaded", function () {
+  var welcomeBtn = document.getElementById("welcomeBtn");
+  var welcomeMessage = document.getElementById("welcomeMessage");
+
+  if (welcomeBtn && welcomeMessage) {
+    welcomeBtn.addEventListener("click", function () {
+      welcomeMessage.textContent =
+        "Welcome to the Sinag Tamaraw blog! Enjoy the highlights, performances, and moments from FEU Roosevelt Marikina.";
+      welcomeMessage.style.display = "block";
+    });
+  }
+  var themeBtn = document.getElementById("themeBtn");
+
+  function applyTheme(isDark) {
+    document.body.classList.toggle("dark-mode", isDark);
+    if (themeBtn) {
+      themeBtn.textContent = isDark ? "Light Mode" : "Dark Mode";
+    }
+  }
+  var savedDark = false;
+  try {
+    savedDark = localStorage.getItem("theme") === "dark";
+  } catch (e) {}
+  applyTheme(savedDark);
+
+  if (themeBtn) {
+    themeBtn.addEventListener("click", function () {
+      var isDark = !document.body.classList.contains("dark-mode");
+      applyTheme(isDark);
+      try {
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      } catch (e) {}
+    });
+  }
+  var form = document.querySelector("#contact-form form");
+
+  if (form) {
+    form.noValidate = true; 
+
+    var nameInput = document.getElementById("name");
+    var emailInput = document.getElementById("email");
+    var messageInput = document.getElementById("message");
+
+    function makeErrorSpan(input) {
+      var span = document.createElement("span");
+      span.className = "error-msg";
+      input.insertAdjacentElement("afterend", span);
+      return span;
+    }
+
+    var nameError = makeErrorSpan(nameInput);
+    var emailError = makeErrorSpan(emailInput);
+    var messageError = makeErrorSpan(messageInput);
+
+    var successBox = document.createElement("p");
+    successBox.className = "success-msg";
+    successBox.style.display = "none";
+    form.appendChild(successBox);
+
+    function setError(input, span, text) {
+      span.textContent = text;
+      input.classList.add("input-error");
+    }
+
+    function clearError(input, span) {
+      span.textContent = "";
+      input.classList.remove("input-error");
+    }
+
+    [
+      [nameInput, nameError],
+      [emailInput, emailError],
+      [messageInput, messageError]
+    ].forEach(function (pair) {
+      pair[0].addEventListener("input", function () {
+        clearError(pair[0], pair[1]);
+        successBox.style.display = "none";
+      });
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault(); 
+
+      var valid = true;
+      var nameValue = nameInput.value.trim();
+      var emailValue = emailInput.value.trim();
+      var messageValue = messageInput.value.trim();
+
+      successBox.style.display = "none";
+
+      if (nameValue === "") {
+        setError(nameInput, nameError, "Please enter your name.");
+        valid = false;
+      } else {
+        clearError(nameInput, nameError);
+      }
+
+      if (emailValue === "") {
+        setError(emailInput, emailError, "Please enter your email.");
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+        setError(emailInput, emailError, "Please enter a valid email address.");
+        valid = false;
+      } else {
+        clearError(emailInput, emailError);
+      }
+
+  
+      if (messageValue === "") {
+        setError(messageInput, messageError, "Please write your message.");
+        valid = false;
+      } else {
+        clearError(messageInput, messageError);
+      }
+      if (valid) {
+        successBox.textContent =
+          "Thank you, " + nameValue + "! Your message has been sent successfully.";
+        successBox.style.display = "block";
+        form.reset();
+      }
+    });
+  }
+
+});
